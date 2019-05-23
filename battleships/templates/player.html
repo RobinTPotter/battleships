@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block title %}
+    {{ super() }} Homepage
+{% endblock %}
+{% block content %}
+
+
+
+
+no session
+    
+
+<form action="join" method="post">
+new user:
+<input type="text" id="namefield" name="username" onkeyup="checker(this)" value="{{ name }}"></input>
+<input type="hidden" id="test" name="test" value="boo"></input>
+<input type="submit" id="joinbutton" value="join!"></input>
+</form>
+
+
+<script>
+
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    socket.emit('ping', {'hello': 'there' });
+    
+    function checker(x) {
+        console.log(x)
+        socket.emit('checkname', {'username': x.value });
+    }
+        
+    socket.on('username_taken', function() {
+        $('#joinbutton').attr("disabled", true)
+        $('#namefield').css('background-color','red')
+        console.log("username_taken")
+        
+    })
+    
+    socket.on('username_free', function() {
+        console.log("username_free")
+        $('#namefield').css('background-color','white')
+        $('#joinbutton').attr("disabled", false)
+    })
+    
+</script>
+
+
+
+{% endblock %}

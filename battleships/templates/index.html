@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block title %}
+    {{ super() }} Homepage
+{% endblock %}
+{% block content %}
+
+
+hello {{ player['name'] }}
+
+<br />
+<br />
+
+<ul id="player list">
+{% for name in player_list %}
+<li>{{ name }}</li>
+{% endfor %}
+</ul>
+
+<ul id="game list">
+{% for game in game_list %}
+<li onclick="join_game('{{ game.id }}')"><a id="game{{game.id}}" href="#">id: {{ game.id }}</a></li>
+{% endfor %}
+</ul>
+
+<script>
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port)   
+        
+    function join_game(gid) {
+        console.log(gid)
+        socket.emit('join_request', {'username': '{{ player['name'] }}', 'game':gid });
+    }
+        
+    socket.on('join_success', function(data) {
+        console.log('join_success',data)
+        $('#game'+data.id)
+        window.location.href = '/game/' + data.id
+        //$('#namefield').css('background-color','red')
+        //console.log("username_taken")
+        
+    })
+    
+</script>    
+{% endblock %}
