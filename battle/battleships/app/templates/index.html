@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block content %}
+        <h1>Hello, {{ user.username }}!</h1>
+		<b>Available Games:</b>
+		<ul>
+		{% for game in games %}
+        <li>{{ game }}</li>
+        {% endfor %}
+		<ul>
+{% endblock %}
