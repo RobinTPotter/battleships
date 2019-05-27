@@ -22,6 +22,7 @@ def load_user(id):
 @app.route('/index')
 def index():
     user = current_user
+    print(user)
     return render_template('index.html', title='Home', user=user, games=games)
 
 @app.route('/login', methods=['GET','POST'])
