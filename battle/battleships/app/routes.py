@@ -3,12 +3,13 @@ from app import app
 from app.forms import LoginForm  #i didn't steal this bit
 from flask_login import current_user, login_user
 from flask_login import logout_user
-from app.models import Player
+from app.models import Player, Game
 
 from app import login #this is the batteships app
 
 users = {'robin':Player('robin', 'nobby')}
-games = {}
+new_game = Game()
+games = { new_game.id: new_game }
 
 
 @login.user_loader
