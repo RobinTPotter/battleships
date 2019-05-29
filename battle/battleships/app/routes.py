@@ -1,8 +1,9 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request
 from app import app
 from app.forms import LoginForm  #i didn't steal this bit
 from flask_login import current_user, login_user
 from flask_login import logout_user
+from flask_login import login_required
 from app.models import Player, Game
 
 from app import login #this is the batteships app
@@ -18,13 +19,13 @@ def load_user(id):
     return users[id]
 
 
-
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
     user = current_user
     print(user)
-    return render_template('index.html', title='Home', user=user, games=games)
+    return render_template('index.html', title='Home', games=games)
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -41,6 +42,9 @@ def login():
             flash('invalid user name or password')
             return redirect(url_for('index'))
         login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '': #checks to see if the next is tampered with to got outside
+            next_page = url_for('index')
         return redirect(url_for('index'))
     return render_template('login.html', title='Sign In', form=form)
 
@@ -48,3 +52,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+

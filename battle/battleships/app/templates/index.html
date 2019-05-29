@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 
 {% block content %}
-        <h1>Hello{% if user.id %}, {{ user.id }}{% endif %}!</h1>
-		<b>Available Games {{ gsmes | count  }}</b>
+        <h1>Hello{% if current_user.id %}, {{ current_user.id }}{% endif %}!</h1>
+		<b>Available Games {{ games | count  }}</b>
 		<ul>
 		{% for game in games %}
         <li>{{ game }}</li>

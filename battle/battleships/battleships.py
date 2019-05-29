@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import logging
+import sys
+print (sys.version)
 
 
 if __name__ == "__main__":

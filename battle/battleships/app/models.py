@@ -1,7 +1,11 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from config import Config
-from app import login #this is the batteships app
+
+import uuid
+import logging
+logger = logging.getLogger(Config.LOGNAME)
+
 
 class Player(UserMixin):
     games = []
@@ -18,16 +22,6 @@ class Player(UserMixin):
             return True
         return False
 
-@login.user_loader
-def load_user(id):
-    print('loading user.... '+str(id))
-    return User.query.get(int(id))
-
-
-
-import uuid
-import logging
-logger = logging.getLogger(Config.LOGNAME)
 
 class Game():
     players = []
