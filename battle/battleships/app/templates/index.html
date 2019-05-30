@@ -5,7 +5,14 @@
 		<b>Available Games {{ games | count  }}</b>
 		<ul>
 		{% for game in games %}
-        <li>{{ game }}</li>
-        {% endfor %}
+			<li>
+				{{ game }} {{ game.id }} {{ game.players }} 
+				- {{ game.is_player(current_user.id) }} {% if game.is_player(current_user.id) %} you have joined {% endif %}
+				- {{ game.can_join() }} {% if game.can_join() %} game not full {% endif %}
+				{% if game.can_join() and not game.is_player(current_user.id) %}
+					<a href="{{ url_for('game', id=game.id) }}">join!</a>
+				{% endif %}
+			</li>
+        {% endfor %}	
 		<ul>
 {% endblock %}

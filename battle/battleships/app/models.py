@@ -3,8 +3,8 @@ from flask_login import UserMixin
 from config import Config
 
 import uuid
-import logging
-logger = logging.getLogger(Config.LOGNAME)
+
+from app.logconfig import logger
 
 
 class Player(UserMixin):
@@ -38,6 +38,10 @@ class Game():
     def current_number_players(self):
         return len(self.players)
 
+    def can_join(self):
+        #return False
+        return not self.player_limit == len(self.players)
+
     def join(self,player):
         ok = None
         if player not in self.players:
@@ -55,7 +59,7 @@ class Game():
         return ok
     
     def is_player(self,username):
-        return username in [p.name for p in self.players]
+        return username in [p for p in self.players]
 
     def move(self,data):
         pass

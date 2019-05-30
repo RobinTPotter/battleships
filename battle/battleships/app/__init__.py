@@ -8,4 +8,6 @@ app.config.from_object(Config)
 login = LoginManager(app)
 login.login_view = 'login' # internally used with url_for
 
+
+
 from app import routes
