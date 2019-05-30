@@ -12,21 +12,16 @@ from app import login #this is the batteships app intance of flask_logined thing
 users = {}
 users['robin'] = Player('robin', 'nobby')
 users['nobby'] = Player('nobby', 'robin')
-games = {}
-
-new_game = Game()
-games[new_game.id] = new_game
-new_game2 = Game()
-games[new_game2.id] = new_game2
+games = [Game(),Game()]
 
 
 from app.logconfig import logger
 
-app.logger.info('hello from routes')
+logger.debug('hello from routes')
 
 @login.user_loader
 def load_user(id):
-    print('loading user.... '+str(id))
+    logger.debug('loading user.... '+str(id))
     return users[id]
 
 
@@ -34,8 +29,8 @@ def load_user(id):
 @app.route('/index')
 def index():
     user = current_user
-    print(user)
-    return render_template('index.html', title='Home', games=[games[gid] for gid in games])
+    logger.info(user)
+    return render_template('index.html', title='Home', games=games)
 
 
 @app.route('/login', methods=['GET','POST'])
@@ -54,7 +49,7 @@ def login():
             return redirect(url_for('index'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
-        print('next page {0}'.format(next_page))
+        logger.debug('next page {0}'.format(next_page))
         if not next_page or url_parse(next_page).netloc != '':
             #checks to see if the next is tampered with to got outside
             next_page = url_for('index')
@@ -71,9 +66,13 @@ def logout():
 @app.route('/game/<string:id>')
 @login_required
 def game(id):
-    if id in games:
-        game = games[id]
-        if not game.is_player(current_user.id) and game.can_join(): game.join(current_user.id)
+    games_ids = [g.id for g in games]
+    if id in games_ids:
+        index = games_ids.index(id)
+        game = games[index]
+        if not game.is_player(current_user.id) and game.can_join():
+            if game.join(current_user.id):
+                logger.info('player {0} has joined {1}'.format(current_user.id,id))
         return render_template('game.html', game=game, player=current_user)
     else:
         return url_for('index')

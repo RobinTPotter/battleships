@@ -9,8 +9,15 @@
 				{{ game }} {{ game.id }} {{ game.players }} 
 				- {{ game.is_player(current_user.id) }} {% if game.is_player(current_user.id) %} you have joined {% endif %}
 				- {{ game.can_join() }} {% if game.can_join() %} game not full {% endif %}
+				- {{ game.current_number_players() }}
 				{% if game.can_join() and not game.is_player(current_user.id) %}
 					<a href="{{ url_for('game', id=game.id) }}">join!</a>
+				{% endif %}
+				{% if not game.can_join() and game.is_player(current_user.id) %}
+					<a href="{{ url_for('game', id=game.id) }}">play!</a>
+				{% endif %}
+				{% if game.can_join() and game.is_player(current_user.id) %}
+					awaiting other player!
 				{% endif %}
 			</li>
         {% endfor %}	

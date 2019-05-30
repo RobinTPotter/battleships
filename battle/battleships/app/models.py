@@ -24,13 +24,10 @@ class Player(UserMixin):
 
 
 class Game():
-    players = []
-    player_limit = 2
-    player_in_turn = None
-    board = None
-    id = None
-    
     def __init__(self):
+        self.players = []
+        self.player_limit = 2
+        self.player_in_turn = None
         self.id = str(uuid.uuid4())
         self.board = [[None] * 10] * 10
         logger.info('created game {0} {1}'.format(self.id, self.board))
