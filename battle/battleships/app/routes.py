@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app
-from app.forms import LoginForm  #i didn't steal this bit
+from app.forms import LoginForm, RegistrationForm  #i didn't steal this bit
 from flask_login import current_user, login_user
 from flask_login import logout_user
 from flask_login import login_required
@@ -8,13 +8,7 @@ from app.models import Player, Game
 from werkzeug.urls import url_parse
 
 from app import login #this is the batteships app intance of flask_logined thing
-
-users = {}
-users['robin'] = Player('robin', 'nobby')
-users['nobby'] = Player('nobby', 'robin')
-games = [Game(),Game()]
-
-
+from app.database import users, games
 from app.logconfig import logger
 
 logger.debug('hello from routes')
@@ -22,7 +16,7 @@ logger.debug('hello from routes')
 @login.user_loader
 def load_user(id):
     logger.debug('loading user.... '+str(id))
-    return users[id]
+    return [u for u in users if u.id==id][0]
 
 
 @app.route('/')
@@ -41,10 +35,11 @@ def login():
     if form.validate_on_submit():
         flash('login requested fir user {0}, remember me={1}'.format(form.username.data, form.remember_me.data))
         user = None
-        if form.username.data in users:
-            user = users[form.username.data]
-            
+        if form.username.data in [u.id for u in users]:
+            user = [u for u in users if u.id==form.username.data][0]
+            logger.info('found user {0}'.format(user))
         if user is None or not user.check_password(form.password.data):
+            logger.info('found user {0} and {1} ({2})'.format(user, user.check_password(form.password.data), form.password.data))
             flash('invalid user name or password')
             return redirect(url_for('index'))
         login_user(user, remember=form.remember_me.data)
@@ -76,4 +71,16 @@ def game(id):
         return render_template('game.html', game=game, player=current_user)
     else:
         return url_for('index')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = Player(form.username.data, form.password.data)
+        users.append(user)
+        flash('registration complete')
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
 

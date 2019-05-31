@@ -8,14 +8,17 @@ from app.logconfig import logger
 
 
 class Player(UserMixin):
-    games = []
     def __init__(self, username, password):
         self.id = username
         self.set_password(password)
+        self.games = []
     def set_password(self, password):
         self.password = generate_password_hash(password)
+        logger.info('password reset')
     def check_password(self, password):
-        return check_password_hash(self.password, password)
+        ok = check_password_hash(self.password, password)
+        logger.info('password check {0}'.format(ok))
+        return ok
     def join_game(self, game):
         if game not in games:
             games.append(game)
