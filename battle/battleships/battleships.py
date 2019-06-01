@@ -10,4 +10,4 @@ if __name__ == "__main__":
     logging.getLogger('werkzeug').addHandler(ch)
     app.logger.error('bollocks')
     app.debug = True
-    app.run(host='0.0.0.0', port=8085, threaded=True, extra_files=[])
+    app.run(host='0.0.0.0', port=8085, threaded=True, extra_files=['templates'])

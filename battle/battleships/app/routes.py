@@ -16,7 +16,9 @@ logger.debug('hello from routes')
 @login.user_loader
 def load_user(id):
     logger.debug('loading user.... '+str(id))
-    return [u for u in users if u.id==id][0]
+    got_user = [u for u in users if u.id==id]
+    if len(got_user)==0: return None
+    else: return got_user[0]
 
 
 @app.route('/')
@@ -62,15 +64,18 @@ def logout():
 @login_required
 def game(id):
     games_ids = [g.id for g in games]
+    logger.info('games {0} testing {1} is {2}'.format(games_ids,id,id in games_ids))
     if id in games_ids:
         index = games_ids.index(id)
         game = games[index]
         if not game.is_player(current_user.id) and game.can_join():
             if game.join(current_user.id):
                 logger.info('player {0} has joined {1}'.format(current_user.id,id))
-        return render_template('game.html', game=game, player=current_user)
+        page_out = render_template('game.html', game=game, player=current_user)
+        logger.info(page_out)
+        return page_out
     else:
-        return url_for('index')
+        return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

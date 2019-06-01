@@ -19,11 +19,6 @@ class Player(UserMixin):
         ok = check_password_hash(self.password, password)
         logger.info('password check {0}'.format(ok))
         return ok
-    def join_game(self, game):
-        if game not in games:
-            games.append(game)
-            return True
-        return False
 
 
 class Game():
