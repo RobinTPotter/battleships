@@ -1,3 +1,12 @@
+
+
+var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+function ping() {
+    socket.emit('ping', {'hello': 'there' });
+}
+
+
 //make sure a board can be decorated
 
 function test_board() {
@@ -12,7 +21,7 @@ function test_board() {
     }
 }
 
-
+test_board()
 //to toggle view of board, you or opponent
 
 var board = true
@@ -29,4 +38,11 @@ function swap() {
 }
 
 
+socket.on('joined', function(data) {
+    console.log('welcome '+data.id)
+    document.getElementById('opponents_name').innerHTML = data.id
+})
 
+socket.on('username_free', function() {
+  
+})

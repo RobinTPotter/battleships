@@ -5,6 +5,7 @@ from config import Config
 import uuid
 
 from app.logconfig import logger
+from app import socketio
 
 
 class Player(UserMixin):
@@ -70,7 +71,10 @@ class Game():
                 self.players_turn = self.first_joined
         else:
             ok = False
-            
+         
+        if ok:
+            logger.info('going to emit now')
+            socketio.emit('joined', {'id':player_id})
         return ok
     
     def is_player(self,username):
@@ -78,4 +82,8 @@ class Game():
 
     def move(self,data):
         pass
+
+    @socketio.on('ping')
+    def ding(self):
+        logger.info('DIINGNNGG!!')
         

@@ -44,7 +44,11 @@ td.boat { background-color: grey }
 <form>
 <input type="button" value="swap" onclick="swap()"></input>
 </form>
+<script src="{{ url_for('static', filename='lib/socket-io/socket.io.min.js')}}"></script>
 <script src="{{ url_for('static', filename='battleships.js')}}"></script>
 
+<form>
+<input type="button" value="ping" onclick="ping()"></input>
+</form>
 {% endblock %}
 
