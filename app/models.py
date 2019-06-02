@@ -20,37 +20,34 @@ class Player(UserMixin):
         logger.info('password check {0}'.format(ok))
         return ok
 
+class GamePlayer():
+    def __init__(self,id):
+        self.player = id
+        self.my_board = ([['water'] * 10] * 10)
+        self.their_board = ([['water'] * 10] * 10)
+
 
 class Game():
     def __init__(self):
-        self.players = []
+        self.players = {}
         self.player_limit = 2
-        self.player_in_turn = None
+        self.players_turn = None
+        self.first_joined = None
         self.id = str(uuid.uuid4())
-        self.board = []
-        self.board.append([['water'] * 10] * 10)
-        self.board.append([['water'] * 10] * 10)
-        self.board_view = 0
-        logger.info('created game {0} {1}'.format(self.id, self.board))
+        logger.info('created game {0}'.format(self.id))
 
-    def notme(self,id):
-        index = self.myindex(id,False)
-        if index == 1 and len(self.players) == 1:
-            return None
-        return self.players[index]
+    def opponent(self,id):
+        opp = [p for p in self.players.keys() if p is not id]
+        if len(opp) == 0:
+            return "no player yet"
+        else:
+            return opp[0]
 
+    def show_board(self,id):
+        return self.players[id].my_board
 
-
-    def myindex(self,id,me=True):
-        index = self.players.index(id)
-        if me is not True:
-            index = index + 1
-            if index>1: index = 0
-        return index
-
-    def show_board(self,id,me=True):
-        index = self.myindex(id,me)
-        return self.board[index]
+    def show_opponent_view_board(self,id):
+        return self.players[id].their_board
 
     def current_number_players(self):
         return len(self.players)
@@ -62,21 +59,22 @@ class Game():
     def join(self,player_id):
         ok = None
         if player_id not in self.players:
-            if len(self.players)==self.player_limit:
+            if len(self.players.keys())==self.player_limit:
                 ok=False
             else:
-                self.players.append(player_id)
+                self.players[player_id] = GamePlayer(player_id)
                 ok=True
+                if self.first_joined is None: self.first_joined = player_id
             
-            if len(self.players)==self.player_limit:
-                self.player_in_turn = 0
+            if len(self.players.keys())==self.player_limit:
+                self.players_turn = self.first_joined
         else:
             ok = False
             
         return ok
     
     def is_player(self,username):
-        return username in [p for p in self.players]
+        return username in self.players
 
     def move(self,data):
         pass

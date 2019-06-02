@@ -29,9 +29,9 @@ td.boat { background-color: grey }
 </div>
 
 <div id="theirboard" style="display:none">
-{% set pid = game.notme(current_user.id) %}<h2>{% if pid is none %}no player{% else %} pid {% endif %} </h2>
+<h2 id="opponents_name">{{ game.opponent(current_user.id) }}</h2>
 <table>
-{% for row in game.show_board(current_user.id, False) %}
+{% for row in game.show_opponent_view_board(current_user.id) %}
 {% set r=loop.index -%}
 <tr>
  {%- for col in row -%}
