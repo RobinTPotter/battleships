@@ -33,11 +33,23 @@ class Game():
         self.board_view = 0
         logger.info('created game {0} {1}'.format(self.id, self.board))
 
-    def show_board(self,id,me=True):
+    def notme(self,id):
+        index = self.myindex(id,False)
+        if index == 1 and len(self.players) == 1:
+            return None
+        return self.players[index]
+
+
+
+    def myindex(self,id,me=True):
         index = self.players.index(id)
         if me is not True:
             index = index + 1
             if index>1: index = 0
+        return index
+
+    def show_board(self,id,me=True):
+        index = self.myindex(id,me)
         return self.board[index]
 
     def current_number_players(self):
@@ -47,13 +59,13 @@ class Game():
         #return False
         return not self.player_limit == len(self.players)
 
-    def join(self,player):
+    def join(self,player_id):
         ok = None
-        if player not in self.players:
+        if player_id not in self.players:
             if len(self.players)==self.player_limit:
                 ok=False
             else:
-                self.players.append(player)
+                self.players.append(player_id)
                 ok=True
             
             if len(self.players)==self.player_limit:
