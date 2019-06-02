@@ -72,7 +72,7 @@ def game(id):
             if game.join(current_user.id):
                 logger.info('player {0} has joined {1}'.format(current_user.id,id))
         page_out = render_template('game.html', game=game, player=current_user)
-        logger.info(page_out)
+        #logger.info(page_out)
         return page_out
     else:
         return redirect(url_for('index'))

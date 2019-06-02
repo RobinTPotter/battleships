@@ -27,8 +27,18 @@ class Game():
         self.player_limit = 2
         self.player_in_turn = None
         self.id = str(uuid.uuid4())
-        self.board = [[None] * 10] * 10
+        self.board = []
+        self.board.append([['water'] * 10] * 10)
+        self.board.append([['water'] * 10] * 10)
+        self.board_view = 0
         logger.info('created game {0} {1}'.format(self.id, self.board))
+
+    def show_board(self,id,me=True):
+        index = self.players.index(id)
+        if me is not True:
+            index = index + 1
+            if index>1: index = 0
+        return self.board[index]
 
     def current_number_players(self):
         return len(self.players)
