@@ -59,7 +59,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
 @app.route('/game/<string:id>')
 @login_required
 def game(id):

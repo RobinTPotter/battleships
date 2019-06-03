@@ -37,10 +37,23 @@ function swap() {
     }
 }
 
+function ready(p,g) {
+    socket.emit('ready', {'player': p, 'game': g });
+}
 
 socket.on('joined', function(data) {
     console.log('welcome '+data.id)
     document.getElementById('opponents_name').innerHTML = data.id
+})
+
+socket.on('player_turn_changed', function(data) {
+    console.log('player_turn_changed', data.id)
+    document.getElementById('whose_turn').innerHTML = data.id
+})
+
+socket.on('game_on', function(data) {
+    console.log('game on',data)
+    document.getElementById('whose_turn').innerHTML = data.id
 })
 
 socket.on('username_free', function() {
