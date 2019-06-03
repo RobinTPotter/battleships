@@ -119,7 +119,9 @@ def ready(data):
         actual_game = [g for g in games if g.id == game][0]
         actual_game.players[id].ready = True
         socketio.emit('player_ready', {'id':id})
-        if len([actual_game.players[p].ready for p in actual_game.players if actual_game.players[p].ready==False])==0:
+        areready = [p for p in actual_game.list_players() if actual_game.players[p].ready==True]
+        logger.info('are ready {0}'.format(areready))
+        if len(areready)==2:
             logger.info('both ready, playing')
             socketio.emit('game_on', {'id':actual_game.players_turn})
 

@@ -48,12 +48,12 @@ socket.on('joined', function(data) {
 
 socket.on('player_turn_changed', function(data) {
     console.log('player_turn_changed', data.id)
-    document.getElementById('whose_turn').innerHTML = data.id
+    document.getElementById('whose_turn').innerHTML = '| ' + data.id + '\'s turn'
 })
 
 socket.on('game_on', function(data) {
     console.log('game on',data)
-    document.getElementById('whose_turn').innerHTML = data.id
+    document.getElementById('whose_turn').innerHTML = '| ' + data.id + '\'s turn'
 })
 
 socket.on('username_free', function() {
