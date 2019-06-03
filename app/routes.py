@@ -35,7 +35,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        flash('login requested fir user {0}, remember me={1}'.format(form.username.data, form.remember_me.data))
+        ##flash('login requested fir user {0}, remember me={1}'.format(form.username.data, form.remember_me.data))
         user = None
         if form.username.data in [u.id for u in users]:
             user = [u for u in users if u.id==form.username.data][0]

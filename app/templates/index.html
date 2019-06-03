@@ -6,19 +6,18 @@
 		<ul>
 		{% for game in games %}
 			<li>
-				{{ game }} {{ game.id }} {{ game.players }} 
-				- {{ game.is_player(current_user.id) }} {% if game.is_player(current_user.id) %} you have joined {% endif %}
-				- {{ game.can_join() }} {% if game.can_join() %} game not full {% endif %}
-				- {{ game.current_number_players() }}
-				{% if game.can_join() and not game.is_player(current_user.id) %}
-					<a href="{{ url_for('game', id=game.id) }}">join!</a>
+				{{ game.id }} {% if game.list_players() | count > 0 %} {{ game.list_players() }} {% endif %}
+				{% if game.is_player(current_user.id) %} | you have joined  {% endif %} 
+				{% if game.can_join() %} | game waits for next player  {% endif %} 
+				{% if game.can_join() and not game.is_player(current_user.id) %} 
+					| <a href="{{ url_for('game', id=game.id) }}">join!</a>
 				{% endif %}
 				{% if not game.can_join() and game.is_player(current_user.id) %}
-					<a href="{{ url_for('game', id=game.id) }}">play!</a>
-				{% endif %}
+					| <a href="{{ url_for('game', id=game.id) }}">play!</a>
+				{% endif %}	
 				{% if game.can_join() and game.is_player(current_user.id) %}
-					awaiting other player!
-				{% endif %}
+					| <a href="{{ url_for('game', id=game.id) }}">setup!</a>
+				{% endif %}				
 			</li>
         {% endfor %}	
 		<ul>

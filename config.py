@@ -1,5 +1,7 @@
 import os
+import logging
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
     LOGNAME = 'battleships'
+    LOGLEVEL = logging.DEBUG

@@ -26,16 +26,23 @@ class GamePlayer():
         self.player = id
         self.my_board = ([['water'] * 10] * 10)
         self.their_board = ([['water'] * 10] * 10)
+        self.ready = False
 
 
 class Game():
+    stages = ['setup','playing','ended']
+    
     def __init__(self):
         self.players = {}
         self.player_limit = 2
         self.players_turn = None
         self.first_joined = None
+        self.stage_number = 0
         self.id = str(uuid.uuid4())
         logger.info('created game {0}'.format(self.id))
+
+    def stage(self):
+        return stages[self.stage_number]        
 
     def opponent(self,id):
         opp = [p for p in self.players.keys() if p is not id]
@@ -43,6 +50,9 @@ class Game():
             return "no player yet"
         else:
             return opp[0]
+
+    def list_players(self):
+        return list(self.players.keys())
 
     def show_board(self,id):
         return self.players[id].my_board

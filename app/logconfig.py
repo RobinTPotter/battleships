@@ -2,10 +2,10 @@ import logging
 from config import Config 
 
 logger = logging.getLogger(Config.LOGNAME)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setLevel(Config.LOGLEVEL)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
-logger.setLevel(logging.DEBUG)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(Config.LOGLEVEL)
 logger.error('test just kidding!')
