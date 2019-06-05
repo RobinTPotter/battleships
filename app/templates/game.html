@@ -10,13 +10,14 @@
 
 <style>
 
-table { border: none }
-td, tr { border: 1px solid black; }
-td { width:20px; height:20px; }
-td.water { background-color: cyan }
-td.miss { background-color: yellow }
-td.hit { background-color: red }
-td.boat { background-color: grey }
+table {  border-collapse: collapse }
+td, tr { border: none; }
+div.boat { border: 1px black solid; }
+td  { width:20px; height:20px; }
+.water { background-color: cyan }
+.miss { background-color: yellow }
+.hit { background-color: red }
+.boat { background-color: grey }
 
 </style>
 Stage: <span id="game_stage">{{ game.stage() }}</span>
@@ -29,7 +30,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 {% set r=loop.index - 1 -%}
 <tr class="sea">
  {%- for col in row -%}
-<td id="you_c{{loop.index - 1 }}r{{r}}" class="{{ col }} sea"></td>
+<td id="you_c{{loop.index - 1 }}r{{r}}" class="{{ col }} seablock sea"></td>
  {%- endfor -%}
 </tr>
 {%- endfor %}
@@ -38,7 +39,8 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 {% if game.stage() == 'setup' %}
 <span>
 {% for boat in game.get_game_player(current_user.id).get_boats() %}
-<table id="{{ boat }}" class="dragboat draggable ui-widget-content ui-draggable" style="position:relative"><tr>{% for n in range(boat.length) %}<td class="boat"></td>{% endfor %}</tr></table>
+<div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat draggable ui-widget-content ui-draggable boat" style="position: relative; width:{{ boat.length * 21 }}px; height:{{ 1 * 21 }}px">
+</div>
 {% endfor %}
 </span>
 {% endif %}
@@ -71,9 +73,26 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 
 
 $(function() {
-  $( ".dragboat" ).draggable({ "snap": ".sea", "containment": ".sea" });
+  $( ".dragboat" ).draggable({ "snap": ".sea", "containment": "table.sea" });
   //$( ".dragboat" ).doubletap(function() { alert('taptap')})
-  $( ".dragboat" ).click(function() { alert('taptap')})
+  $( ".dragboat" ).click(function(me) { 
+    var length = Number(me.target.id.split('|')[1])
+    var el = document.getElementById(me.target.id)
+    var h = me.target.style.height
+        console.log(h)
+    if (h=='21px') {
+        el.style.height = (length * 21)+'px'
+        el.style.width =  (21)+'px'
+        console.log(el)
+    } else {
+        el.style.height = (21)+'px'
+        el.style.width =  (length * 21)+'px'
+    
+    }
+    
+    
+    
+  })
 });
 
 

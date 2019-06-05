@@ -25,11 +25,12 @@ class Player(UserMixin):
 
 class Boat():
     lengths = [5,4,3,3,2]
-    def __init__(self,length=5):
+    names = ['carrier','battleship','submarine','cruiser','destroyer']
+    def __init__(self,length=5, name=''):
         self.length = length
         self.offset_x = None
         self.offset_y = None
-        self.name = ''
+        self.name = name
 
 class GamePlayer():
     def __init__(self,id):
@@ -37,7 +38,7 @@ class GamePlayer():
         self.my_board = ([['water'] * 10] * 10)
         self.their_board = ([['water'] * 10] * 10)
         self.ready = False
-        self.boats = [Boat(b) for b in Boat.lengths]
+        self.boats = [Boat(Boat.lengths[r], Boat.names[r]) for r in range(len(Boat.lengths))]
     def get_boats(self):
         return self.boats
 
