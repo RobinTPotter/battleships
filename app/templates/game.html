@@ -23,16 +23,25 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <span id="whose_turn"></span>
 <div id="myboard" style="display:inherit">
 <h2>{{current_user.id}}</h2>
-<table>
+<span>
+<table class="sea">
 {% for row in game.show_board(current_user.id) %}
-{% set r=loop.index -%}
-<tr>
+{% set r=loop.index - 1 -%}
+<tr class="sea">
  {%- for col in row -%}
-<td id="you_c{{loop.index}}r{{r}}" class="{{ col }}"></td>
+<td id="you_c{{loop.index - 1 }}r{{r}}" class="{{ col }} sea"></td>
  {%- endfor -%}
 </tr>
 {%- endfor %}
 </table>
+</span>
+{% if game.stage() == 'setup' %}
+<span>
+{% for boat in game.get_game_player(current_user.id).get_boats() %}
+<table id="{{ boat }}" class="dragboat draggable ui-widget-content ui-draggable" style="position:relative"><tr>{% for n in range(boat.length) %}<td class="boat"></td>{% endfor %}</tr></table>
+{% endfor %}
+</span>
+{% endif %}
 </div>
 
 <div id="theirboard" style="display:none">
@@ -58,6 +67,16 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 
 <script src="{{ url_for('static', filename='lib/socket-io/socket.io.min.js')}}"></script>
 <script src="{{ url_for('static', filename='battleships.js')}}?{{ game.id }}"></script>
+<script>
 
+
+$(function() {
+  $( ".dragboat" ).draggable({ "snap": ".sea", "containment": ".sea" });
+  //$( ".dragboat" ).doubletap(function() { alert('taptap')})
+  $( ".dragboat" ).click(function() { alert('taptap')})
+});
+
+
+</script>
 {% endblock %}
 

@@ -1,5 +1,3 @@
-
-
 var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
 function ping() {
@@ -21,7 +19,7 @@ function test_board() {
     }
 }
 
-test_board()
+//test_board()
 //to toggle view of board, you or opponent
 
 var board = true
@@ -59,3 +57,5 @@ socket.on('game_on', function(data) {
 socket.on('username_free', function() {
   
 })
+
+

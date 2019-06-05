@@ -20,3 +20,5 @@ from app.logconfig import logger, handler
 app.logger.addHandler(handler)
 
 from app import routes
+
+from app import sockety

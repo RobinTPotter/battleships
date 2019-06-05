@@ -8,7 +8,6 @@ import uuid
 from app.logconfig import logger
 from app import socketio
 
-
 logger.info(dir(socketio))
 
 class Player(UserMixin):
@@ -24,12 +23,23 @@ class Player(UserMixin):
         logger.info('password check {0}'.format(ok))
         return ok
 
+class Boat():
+    lengths = [5,4,3,3,2]
+    def __init__(self,length=5):
+        self.length = length
+        self.offset_x = None
+        self.offset_y = None
+        self.name = ''
+
 class GamePlayer():
     def __init__(self,id):
         self.player = id
         self.my_board = ([['water'] * 10] * 10)
         self.their_board = ([['water'] * 10] * 10)
         self.ready = False
+        self.boats = [Boat(b) for b in Boat.lengths]
+    def get_boats(self):
+        return self.boats
 
 
 class Game():
@@ -53,6 +63,18 @@ class Game():
             return "no player yet"
         else:
             return opp[0]
+    
+    def get_game_player(self,id):
+        out = None
+        if id in self.players:
+            out = self.players[id]
+        return out
+        
+    def get_user_player(self,id):
+        out = None
+        if id in self.players:
+            out = get_user_from_id(self.players[id].id)
+        return out
 
     def list_players(self):
         return list(self.players.keys())
@@ -102,33 +124,4 @@ class Game():
     def is_player(self,username):
         return username in self.players
 
-    def move(self,data):
-        pass
 
-
-from app.database import games
-
-
-
-@socketio.on('ready')
-def ready(data):
-    logger.info(data)
-    id = data['player']
-    game = data['game']
-    if game in [g.id for g in games]:
-        actual_game = [g for g in games if g.id == game][0]
-        actual_game.players[id].ready = True
-        socketio.emit('player_ready', {'id':id})
-        areready = [p for p in actual_game.list_players() if actual_game.players[p].ready==True]
-        logger.info('are ready {0}'.format(areready))
-        if len(areready)==2:
-            logger.info('both ready, playing')
-            socketio.emit('game_on', {'id':actual_game.players_turn})
-
-
-
-@socketio.on('ping')
-def ding(self):
-    logger.info('DIINGNNGG!!')
-    logger.info(self)
-    
