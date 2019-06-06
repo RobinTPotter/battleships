@@ -23,41 +23,42 @@ td  { width:20px; height:20px; }
 Stage: <span id="game_stage">{{ game.stage() }}</span>
 <span id="whose_turn"></span>
 <div id="myboard" style="display:inherit">
-<h2>{{current_user.id}}</h2>
-<span>
-<table class="sea">
-{% for row in game.show_board(current_user.id) %}
-{% set r=loop.index - 1 -%}
-<tr class="sea">
- {%- for col in row -%}
-<td id="you_c{{loop.index - 1 }}r{{r}}" class="{{ col }} seablock sea"></td>
- {%- endfor -%}
-</tr>
-{%- endfor %}
-</table>
-</span>
-{% if game.stage() == 'setup' %}
-<span>
-{% for boat in game.get_game_player(current_user.id).get_boats() %}
-<div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat draggable ui-widget-content ui-draggable boat" style="position: relative; width:{{ boat.length * 21 }}px; height:{{ 1 * 21 }}px">
-</div>
-{% endfor %}
-</span>
-{% endif %}
+    <h2>{{current_user.id}}</h2>
+    <div>
+        <div id="sea" style="display:inline-block">
+            <table class="sea">
+                {% for row in game.show_board(current_user.id) %}
+                {% set r=loop.index - 1 -%}
+                    <tr class="sea">
+                         {%- for col in row -%}
+                        <td id="you_c{{loop.index - 1 }}r{{r}}" class="{{ col }} seablock sea"></td>
+                         {%- endfor -%}
+                    </tr>
+                {%- endfor %}
+            </table>
+        </div>
+        {% if game.stage() == 'setup' %}
+        <div style="display:inline-block">
+            {% for boat in game.get_game_player(current_user.id).get_boats() %}
+            <div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat boat" style="position: absolute; width:{{ boat.length * 21 }}px; height:{{ 1 * 20 }}px"></div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
 </div>
 
 <div id="theirboard" style="display:none">
-<h2 id="opponents_name">{{ game.opponent(current_user.id) }}</h2>
-<table>
-{% for row in game.show_opponent_view_board(current_user.id) %}
-{% set r=loop.index -%}
-<tr>
- {%- for col in row -%}
-<td id="opp_c{{loop.index}}r{{r}}" class="{{ col }}"></td>
- {%- endfor -%}
-</tr>
-{%- endfor %}
-</table>
+    <h2 id="opponents_name">{{ game.opponent(current_user.id) }}</h2>
+    <table>
+        {% for row in game.show_opponent_view_board(current_user.id) %}
+        {% set r=loop.index -%}
+        <tr>
+             {%- for col in row -%}
+            <td id="opp_c{{loop.index}}r{{r}}" class="{{ col }}"></td>
+             {%- endfor -%}
+            </tr>
+        {%- endfor %}
+    </table>
 </div>
 
 <form>
@@ -65,32 +66,53 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <input type="button" value="ping" onclick="ping()"></input>
 <input type="button" value="ready" onclick="ready('{{ current_user.id }}','{{ game.id }}')"></input>
 </form>
+<div id="output">poo</div>
 
 
 <script src="{{ url_for('static', filename='lib/socket-io/socket.io.min.js')}}"></script>
 <script src="{{ url_for('static', filename='battleships.js')}}?{{ game.id }}"></script>
 <script>
 
+document.addEventListener('mousedown', function(e) { document.getElementById('output').innerHTML='md '+e; console.log(e) })
+document.addEventListener('mousemove', function(e) { document.getElementById('output').innerHTML='mm '+e })
+document.addEventListener('touchstart', function(e) { document.getElementById('output').innerHTML='ts '+e })
+document.addEventListener('touchmove', function(e) { document.getElementById('output').innerHTML='tm '+e })
+document.addEventListener('touchend', function(e) { document.getElementById('output').innerHTML='te '+e })
 
 $(function() {
   $( ".dragboat" ).draggable({ "snap": ".sea", "containment": "table.sea" });
   //$( ".dragboat" ).doubletap(function() { alert('taptap')})
-  $( ".dragboat" ).click(function(me) { 
+  $( ".boat" ).click(function(me) { 
     var length = Number(me.target.id.split('|')[1])
     var el = document.getElementById(me.target.id)
+    var el = document.getElementById(me.target.id)
+    var sea = document.getElementById('sea')
+    var seatopnum = Number(sea.style.top.replace(/[^0-9]*/g,''))
+    var sealeftnum = Number(sea.style.left.replace(/[^0-9]*/g,''))
+    var seawidthnum = Number(sea.style.width.replace(/[^0-9]*/g,''))
+    var seaheightnum = Number(sea.style.height.replace(/[^0-9]*/g,''))
     var h = me.target.style.height
-        console.log(h)
-    if (h=='21px') {
-        el.style.height = (length * 21)+'px'
-        el.style.width =  (21)+'px'
-        console.log(el)
+    console.log(h)
+    var len = Number((length * 20))
+    if (h=='20px') {
+        el.style.height = len +'px'
+        el.style.width =  (20)+'px'
+        console.log(el.style.top)
+        console.log(el.style.left)
+        var topnum = Number(el.style.top.replace(/[^0-9]*/g,''))
+        var leftnum = Number(el.style.left.replace(/[^0-9]*/g,''))
+        if ((topnum+len)>(seatopnum+seaheightnum)) {
+            console.log('bollocks',topnum,len,topnum+len,seatopnum,seaheightnum,seatopnum+seaheightnum)
+        }
     } else {
-        el.style.height = (21)+'px'
-        el.style.width =  (length * 21)+'px'
-    
+        el.style.height = (20)+'px'
+        el.style.width =  len+'px'
+        console.log(el.style.top)
+        console.log(el.style.left)
+        var topnum = Number(el.style.top.replace(/[^0-9]*/g,''))
+        var leftnum = Number(el.style.left.replace(/[^0-9]*/g,''))
+        i
     }
-    
-    
     
   })
 });
