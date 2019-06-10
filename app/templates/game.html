@@ -10,10 +10,11 @@
 
 <style>
 
-table {  border-collapse: collapse }
+{# table {  border-collapse: collapse } #}
+table {  border: none}
 td, tr { border: none; }
 div.boat { border: 1px black solid; }
-td  { width:20px; height:20px; }
+td  { width:22px; height:22px; }
 .water { background-color: cyan }
 .miss { background-color: yellow }
 .hit { background-color: red }
@@ -25,8 +26,8 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <div id="myboard" style="display:inherit">
     <h2>{{current_user.id}}</h2>
     <div>
-        <div id="sea" style="display:inline-block">
-            <table class="sea">
+        <div id="sea">
+            <table id="seabed"  class="sea">
                 {% for row in game.show_board(current_user.id) %}
                 {% set r=loop.index - 1 -%}
                     <tr class="sea">
@@ -38,9 +39,9 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
             </table>
         </div>
         {% if game.stage() == 'setup' %}
-        <div style="display:inline-block">
+        <div>
             {% for boat in game.get_game_player(current_user.id).get_boats() %}
-            <div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat boat" style="position: absolute; width:{{ boat.length * 21 }}px; height:{{ 1 * 20 }}px"></div>
+            <div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat boat" style="position: absolute; top: {{ 26 * loop.index }}; width:{{ boat.length * 22 + 4*(boat.length-1) }}px; height:{{ 1 * 22 }}px"></div>
             {% endfor %}
         </div>
         {% endif %}
@@ -60,7 +61,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         {%- endfor %}
     </table>
 </div>
-
+<br />
 <form>
 <input type="button" value="swap" onclick="swap()"></input>
 <input type="button" value="ping" onclick="ping()"></input>
@@ -80,7 +81,18 @@ document.addEventListener('touchmove', function(e) { document.getElementById('ou
 document.addEventListener('touchend', function(e) { document.getElementById('output').innerHTML='te '+e })
 
 $(function() {
-  $( ".dragboat" ).draggable({ "snap": ".sea", "containment": "table.sea" });
+  $( ".dragboat" ).draggable(
+    { "snap": ".seablock",
+    "snapMode": "inner",
+    "containment": "table.sea",
+    "drag": function(event,ui) {
+            var p = $('#seabed').position()
+            console.log(Math.round((ui.offset.top - p.top - 2 )/26))
+            console.log(Math.round((ui.offset.left - p.left - 2)/26))
+        }
+    }
+   );
+  
   //$( ".dragboat" ).doubletap(function() { alert('taptap')})
   $( ".boat" ).click(function(me) { 
     var length = Number(me.target.id.split('|')[1])
@@ -92,26 +104,28 @@ $(function() {
     var seawidthnum = Number(sea.style.width.replace(/[^0-9]*/g,''))
     var seaheightnum = Number(sea.style.height.replace(/[^0-9]*/g,''))
     var h = me.target.style.height
-    console.log(h)
-    var len = Number((length * 20))
-    if (h=='20px') {
+    //console.log(h)
+    var len = Number((length * 22) + 4*(length-1) )
+    //console.log('length', length, 'len',len)
+    if (h=='22px') {
         el.style.height = len +'px'
-        el.style.width =  (20)+'px'
-        console.log(el.style.top)
-        console.log(el.style.left)
+        el.style.width =  (22)+'px'
+       
+        
+        
+        
         var topnum = Number(el.style.top.replace(/[^0-9]*/g,''))
         var leftnum = Number(el.style.left.replace(/[^0-9]*/g,''))
-        if ((topnum+len)>(seatopnum+seaheightnum)) {
-            console.log('bollocks',topnum,len,topnum+len,seatopnum,seaheightnum,seatopnum+seaheightnum)
-        }
+       
+        
+        
     } else {
-        el.style.height = (20)+'px'
+        el.style.height = (22)+'px'
         el.style.width =  len+'px'
-        console.log(el.style.top)
-        console.log(el.style.left)
+        //console.log(el.style.top)
+        //console.log(el.style.left)
         var topnum = Number(el.style.top.replace(/[^0-9]*/g,''))
         var leftnum = Number(el.style.left.replace(/[^0-9]*/g,''))
-        i
     }
     
   })

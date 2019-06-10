@@ -31,6 +31,7 @@ class Boat():
         self.offset_x = None
         self.offset_y = None
         self.name = name
+        self.block = 21
 
 class GamePlayer():
     def __init__(self,id):
