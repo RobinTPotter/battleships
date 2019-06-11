@@ -55,6 +55,8 @@ class Game():
         self.stage_number = 0
         self.id = str(uuid.uuid4())
         logger.info('created game {0}'.format(self.id))
+        self.border_spacing = 5
+        self.cell_size = 25
 
     def stage(self):
         return Game.stages[self.stage_number]        

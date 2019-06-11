@@ -11,10 +11,10 @@
 <style>
 
 {# table {  border-collapse: collapse } #}
-table {  border: none}
-td, tr { border: none; }
-div.boat { border: 1px black solid; }
-td  { width:22px; height:22px; }
+table { table-layout: fixed; border: none; border-spacing: {{ game.border_spacing }}px}
+td, tr { border: none; margin: 0; padding: 0; }
+{#div.boat { border: 1px black solid; }#}
+td  { width:{{ game.cell_size }}px; height:{{ game.cell_size }}px; }
 .water { background-color: cyan }
 .miss { background-color: yellow }
 .hit { background-color: red }
@@ -41,7 +41,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         {% if game.stage() == 'setup' %}
         <div>
             {% for boat in game.get_game_player(current_user.id).get_boats() %}
-            <div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat boat" style="position: absolute; top: {{ 26 * loop.index }}; width:{{ boat.length * 22 + 4*(boat.length-1) }}px; height:{{ 1 * 22 }}px; "></div>
+            <div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat boat" style="position: absolute;  width:{{ boat.length * game.cell_size + ( game.border_spacing ) * ( boat.length - 1 ) }}px; height:{{ 1 * game.cell_size }}px; "></div>
             {% endfor %}
         </div>
         {% endif %}
@@ -74,11 +74,11 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <script src="{{ url_for('static', filename='battleships.js')}}?{{ game.id }}"></script>
 <script>
 
-document.addEventListener('mousedown', function(e) { document.getElementById('output').innerHTML='md '+e; console.log(e) })
-document.addEventListener('mousemove', function(e) { document.getElementById('output').innerHTML='mm '+e })
-document.addEventListener('touchstart', function(e) { document.getElementById('output').innerHTML='ts '+e })
-document.addEventListener('touchmove', function(e) { document.getElementById('output').innerHTML='tm '+e })
-document.addEventListener('touchend', function(e) { document.getElementById('output').innerHTML='te '+e })
+//document.addEventListener('mousedown', function(e) { document.getElementById('output').innerHTML='md '+e; console.log(e) })
+//document.addEventListener('mousemove', function(e) { document.getElementById('output').innerHTML='mm '+e })
+//document.addEventListener('touchstart', function(e) { document.getElementById('output').innerHTML='ts '+e })
+//document.addEventListener('touchmove', function(e) { document.getElementById('output').innerHTML='tm '+e })
+//document.addEventListener('touchend', function(e) { document.getElementById('output').innerHTML='te '+e })
 
 $(function() {
   $( ".dragboat" ).draggable(
@@ -86,6 +86,8 @@ $(function() {
     "snapMode": "inner",
     "containment": "table.sea",
     "drag": function(event,ui) {
+            $('#output').html($(this).attr('class'))
+            var starting = event.target.innerHTML
             var p = $('#seabed').position()
             var r = Math.round((ui.offset.top - p.top - 2 )/26)+1
             var c = Math.round((ui.offset.left - p.left - 2)/26)+1
@@ -98,9 +100,12 @@ $(function() {
         }
     }
    );
+
+var last_tick = 0
   
   //$( ".dragboat" ).doubletap(function() { alert('taptap')})
-  $( ".boat" ).click(function() { 
+  $( ".boat" ).bind('mouseup',function() { 
+
    var text = event.target.innerHTML.replace(/[^0-9]/g," ").replace(/\s\s+/g, ' ').trim().split(' ')
    console.log(text)
    var c = text[0]
@@ -115,6 +120,7 @@ $(function() {
 
     //danger, these are swapped
     event.target.innerHTML=`boat_c${c}r${r}w${h}h${w}aw${ah}ah${aw}`
+
   })
 });
 
