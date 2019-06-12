@@ -33,10 +33,9 @@ class Boat():
         self.x = -1
         self.y = -1
         self.horizontal = 1
-        self.width = 1
+        self.width = length
         self.height = 1
         self.name = name
-        self.block = 21
 
 class GamePlayer():
     def __init__(self,id):
