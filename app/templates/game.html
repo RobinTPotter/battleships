@@ -98,8 +98,13 @@ $(function() {
     );
 
 
-    var boat = d3.select('boats').selectAll('.boat').data({{ game.get_game_player(current_user.id).get_boats() | safe }})
-    boat.enter().append()
+    var boat = d3.select('#boats').selectAll('.boat').data({{ game.get_game_player(current_user.id).get_boats() | safe }})
+    var boatEnter = boat.enter().append('div')
+    
+    boatEnter.attr('id', function(d,i) { return d.name })
+        .attr('class', 'boat')
+        .attr('width', function(d,i) { return d.width })
+        .attr('height', function(d,i) { return d.height })
 
     //$( ".dragboat" ).doubletap(function() { alert('taptap')})
     $( ".boat" ).click(function() { 

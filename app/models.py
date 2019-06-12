@@ -28,8 +28,13 @@ class Boat():
     names = ['carrier','battleship','submarine','cruiser','destroyer']
     def __init__(self,length=5, name=''):
         self.length = length
-        self.offset_x = None
-        self.offset_y = None
+        self.c = -1
+        self.r = -1
+        self.x = -1
+        self.y = -1
+        self.horizontal = 1
+        self.width = 1
+        self.height = 1
         self.name = name
         self.block = 21
 
@@ -41,7 +46,14 @@ class GamePlayer():
         self.ready = False
         self.boats = [Boat(Boat.lengths[r], Boat.names[r]) for r in range(len(Boat.lengths))]
     def get_boats(self):
-        return self.boats
+        return str([{ 'length': b.length, 'name': b.name, 
+                'r': b.r, 'c': b.c,
+                'x': b.x,
+                'y': b.y,
+                'horizontal': b.horizontal,
+                'width': b.width,
+                'height': b.height                
+                } for b in self.boats])
 
 
 class Game():
