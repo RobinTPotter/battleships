@@ -28,21 +28,10 @@ class Boat():
     names = ['carrier','battleship','submarine','cruiser','destroyer']
     def __init__(self,length=5, name=''):
         self.length = length
-        self.offset_x = -1
-        self.offset_y = -1
+        self.offset_x = None
+        self.offset_y = None
         self.name = name
         self.block = 21
-        self.horizontal = 1
-    
-    def __repr__(self):
-        return str({
-            'c': self.offset_x,
-            'r': self.offset_y,
-            'name': self.name,
-            'block': self.block,
-            'horizontal': self.horizontal,
-            'length': self.length
-        })
 
 class GamePlayer():
     def __init__(self,id):
@@ -51,7 +40,6 @@ class GamePlayer():
         self.their_board = ([['water'] * 10] * 10)
         self.ready = False
         self.boats = [Boat(Boat.lengths[r], Boat.names[r]) for r in range(len(Boat.lengths))]
-        
     def get_boats(self):
         return self.boats
 
@@ -67,6 +55,8 @@ class Game():
         self.stage_number = 0
         self.id = str(uuid.uuid4())
         logger.info('created game {0}'.format(self.id))
+        self.border_spacing = 5
+        self.cell_size = 25
 
     def stage(self):
         return Game.stages[self.stage_number]        
@@ -96,11 +86,11 @@ class Game():
     def show_board(self,id):
         return self.players[id].my_board
 
-    def show_ready(self,id):
-        return self.players[id].ready
-
     def get_boats(self,id):
         return self.players[id].boats
+
+    def show_ready(self,id):
+        return self.players[id].ready
 
     def show_opponent_view_board(self,id):
         return self.players[id].their_board
