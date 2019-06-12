@@ -13,7 +13,7 @@
 {# table {  border-collapse: collapse } #}
 table {  border: none}
 td, tr { border: none; }
-div.boat { border: 1px black solid; }
+{# div.boat { border: 1px black solid; }#}
 td  { width:22px; height:22px; }
 .water { background-color: cyan }
 .miss { background-color: yellow }
@@ -79,6 +79,18 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 //document.addEventListener('touchend', function(e) { document.getElementById('output').innerHTML='te '+e })
 
 $(function() {
+
+
+
+    var boat = d3.select('#boats').selectAll('.boat').data({{ game.get_game_player(current_user.id).get_boats() | safe }})
+    var boatEnter = boat.enter().append('div')
+    
+    boatEnter.attr('id', function(d,i) { return d.name })
+        .attr('class', 'boat dragboat')
+        .attr('style', function(d,i) { return `width:${d.width * {{ game.cell_size }}}px; height:${d.height * {{ game.cell_size }}}px; ` })
+
+
+
     $( ".dragboat" ).draggable(
         { "snap": ".seablock",
             "snapMode": "inner",
@@ -97,14 +109,6 @@ $(function() {
         }
     );
 
-
-    var boat = d3.select('#boats').selectAll('.boat').data({{ game.get_game_player(current_user.id).get_boats() | safe }})
-    var boatEnter = boat.enter().append('div')
-    
-    boatEnter.attr('id', function(d,i) { return d.name })
-        .attr('class', 'boat')
-        .attr('width', function(d,i) { return d.width })
-        .attr('height', function(d,i) { return d.height })
 
     //$( ".dragboat" ).doubletap(function() { alert('taptap')})
     $( ".boat" ).click(function() { 
