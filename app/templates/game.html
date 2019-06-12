@@ -40,11 +40,6 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         </div>
         {% if game.stage() == 'setup' %}
         <div id="boats">
-        {#
-            {% for boat in game.get_game_player(current_user.id).get_boats() %}
-            <div id="{{ boat.name ~ '|' ~ boat.length }}" class="dragboat boat" style="position: absolute; top: {{ 26 * loop.index }}; width:{{ boat.length * 22 + 4*(boat.length-1) }}px; height:{{ 1 * 22 }}px; "></div>
-            {% endfor %}
-        #}
         </div>
         {% endif %}
     </div>
