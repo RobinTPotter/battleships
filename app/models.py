@@ -72,9 +72,9 @@ class Game():
         self.columns = 10
         self.stage_number = 0
         self.id = str(uuid.uuid4())
-        logger.info('created game {0}'.format(self.id))
         self.border_spacing = 2
         self.cell_size = 25
+        logger.info('created game {0}'.format(self.id))
     
     def generate_blank_board(self, who='you'):
         board = []
