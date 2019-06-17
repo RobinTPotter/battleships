@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from config import Config
+from flask import jsonify
 
 
 import uuid
@@ -28,20 +29,35 @@ class Boat():
     names = ['carrier','battleship','submarine','cruiser','destroyer']
     def __init__(self,length=5, name=''):
         self.length = length
-        self.offset_x = None
-        self.offset_y = None
+        self.c = -1
+        self.r = -1
+        self.x = -1
+        self.y = -1
+        self.horizontal = 1
+        self.width = length
+        self.height = 1
         self.name = name
-        self.block = 21
 
 class GamePlayer():
     def __init__(self,id):
         self.player = id
-        self.my_board = ([['water'] * 10] * 10)
-        self.their_board = ([['water'] * 10] * 10)
+        self.my_board = None
+        self.their_board = None
         self.ready = False
         self.boats = [Boat(Boat.lengths[r], Boat.names[r]) for r in range(len(Boat.lengths))]
+        
     def get_boats(self):
-        return self.boats
+        return str([{ 'length': b.length, 'name': b.name, 
+                'r': b.r, 'c': b.c,
+                'x': b.x,
+                'y': b.y,
+                'horizontal': b.horizontal,
+                'width': b.width,
+                'height': b.height                
+                } for b in self.boats])
+
+    def get_board(self):
+        return str(self.my_board)
 
 
 class Game():
@@ -52,11 +68,21 @@ class Game():
         self.player_limit = 2
         self.players_turn = None
         self.first_joined = None
+        self.rows = 10
+        self.columns = 10
         self.stage_number = 0
         self.id = str(uuid.uuid4())
-        logger.info('created game {0}'.format(self.id))
-        self.border_spacing = 5
+        self.border_spacing = 2
         self.cell_size = 25
+        logger.info('created game {0}'.format(self.id))
+    
+    def generate_blank_board(self, who='you'):
+        board = []
+        for rr in range(self.rows):
+            for cc in range(self.columns):
+                board.append({ 'name': '{me}_c{cc}r{rr}'.format(me=who,cc=cc,rr=rr), 'c':cc, 'r':rr, 'type': 'water' })
+        logger.info(board)
+        return board
 
     def stage(self):
         return Game.stages[self.stage_number]        
@@ -83,8 +109,11 @@ class Game():
     def list_players(self):
         return list(self.players.keys())
 
-    def show_board(self,id):
+    def get_board(self,id):
         return self.players[id].my_board
+
+    def get_boats(self,id):
+        return self.players[id].boats
 
     def show_ready(self,id):
         return self.players[id].ready
@@ -106,6 +135,8 @@ class Game():
                 ok=False
             else:
                 self.players[player_id] = GamePlayer(player_id)
+                self.players[player_id].my_board = self.generate_blank_board('you')
+                self.players[player_id].their_board = self.generate_blank_board('them')
                 ok=True
                 if self.first_joined is None: self.first_joined = player_id
             
