@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from config import Config
+from flask import jsonify
 
 
 import uuid
@@ -40,10 +41,11 @@ class Boat():
 class GamePlayer():
     def __init__(self,id):
         self.player = id
-        self.my_board = ([['water'] * 10] * 10)
-        self.their_board = ([['water'] * 10] * 10)
+        self.my_board = None
+        self.their_board = None
         self.ready = False
         self.boats = [Boat(Boat.lengths[r], Boat.names[r]) for r in range(len(Boat.lengths))]
+        
     def get_boats(self):
         return str([{ 'length': b.length, 'name': b.name, 
                 'r': b.r, 'c': b.c,
@@ -54,6 +56,9 @@ class GamePlayer():
                 'height': b.height                
                 } for b in self.boats])
 
+    def get_board(self):
+        return str(self.my_board)
+
 
 class Game():
     stages = ['setup','playing','ended']
@@ -63,11 +68,21 @@ class Game():
         self.player_limit = 2
         self.players_turn = None
         self.first_joined = None
+        self.rows = 10
+        self.columns = 10
         self.stage_number = 0
         self.id = str(uuid.uuid4())
         logger.info('created game {0}'.format(self.id))
-        self.border_spacing = 5
+        self.border_spacing = 2
         self.cell_size = 25
+    
+    def generate_blank_board(self, who='you'):
+        board = []
+        for rr in range(self.rows):
+            for cc in range(self.columns):
+                board.append({ 'name': '{me}_c{cc}r{rr}'.format(me=who,cc=cc,rr=rr), 'c':cc, 'r':rr, 'type': 'water' })
+        logger.info(board)
+        return board
 
     def stage(self):
         return Game.stages[self.stage_number]        
@@ -94,7 +109,7 @@ class Game():
     def list_players(self):
         return list(self.players.keys())
 
-    def show_board(self,id):
+    def get_board(self,id):
         return self.players[id].my_board
 
     def get_boats(self,id):
@@ -120,6 +135,8 @@ class Game():
                 ok=False
             else:
                 self.players[player_id] = GamePlayer(player_id)
+                self.players[player_id].my_board = self.generate_blank_board('you')
+                self.players[player_id].their_board = self.generate_blank_board('them')
                 ok=True
                 if self.first_joined is None: self.first_joined = player_id
             
