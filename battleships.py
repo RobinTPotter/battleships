@@ -1,7 +1,10 @@
 #!/usr/bin/python3
+"""
+battleships server
+"""
 import logging
 import sys
-print (sys.version)
+print(sys.version)
 
 
 if __name__ == "__main__":
