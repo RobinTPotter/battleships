@@ -14,6 +14,7 @@
 .miss { background-color: yellow }
 .hit { background-color: red }
 .boat { background-color: grey }
+.illegal { background-color: orange }
 
 </style>
 Stage: <span id="game_stage">{{ game.stage() }}</span>
@@ -27,16 +28,15 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 </form>
 <div id="myboard" style="display:inherit; position:relative">
     <h2>{{current_user.id}}</h2>
-
-<br />
     <div style="display:inherit; position:relative">
-        <div id="sea">          
+        <div id="sea"s tyle="display:inherit; position:relative">      
         </div>
-        {% if game.stage() == 'setup' %}
-        <div id="boats">
-        </div>
-        {% endif %}
+       
     </div>
+    {% if game.stage() == 'setup' %}
+    <div id="boats" style="display:inherit; position:relative">
+    </div>
+    {% endif %}
 </div>
 
 <div id="theirboard" style="display:none">
@@ -85,8 +85,6 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         .attr('class', 'boat dragboat')
         .attr('draggable', 'true')
         .style('position', 'absolute')
-        .style('top', function(d,i) { return `${ {{ game.cell_size}} * i + 100 }px` })
-        .style('left', 300)
         .on('dragstart', drag)
         .on('mousedown', starttouch)
         .on('mouseup', endtouch)
@@ -140,7 +138,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         boat.left =  ev.target.style.left  
         d3.select('#'+data).datum(boat)
         boat_update()
-        update_server(me)
+        update_server(boat,'{{game.id}}')
     }
 
     function spin(me) { 
@@ -160,7 +158,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         //console.log('twisted')
 
         boat_update()
-        update_server(me)
+        update_server(me,'{{game.id}}')
     }
 
 
@@ -171,6 +169,8 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
             .style('width', function(d,i) { return `${d.width * {{ game.cell_size}} + (d.width - 1) * {{ game.border_spacing }} }px` })
             .style('height', function(d,i) { return `${d.height * {{ game.cell_size}} + (d.height - 1) * {{ game.border_spacing }} }px` })
             .call(function(s) { console.log('boat update',s.datum()) })
+            .classed('illegal',function(d) { return d.illegal==1})
+            
     }
        
     boat_update()   

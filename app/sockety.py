@@ -5,6 +5,7 @@ from flask_login import current_user
 
 @socketio.on('ready')
 def ready(data):
+    logger.info(current_user)
     logger.info(data)
     id = current_user
     game = data['game']
@@ -27,8 +28,20 @@ def ding(data):
     logger.info(data)
     
 @socketio.on('boat_moved')
-def boat_moved(data):
+def boat_moved(boat_game):
     logger.info('boat_moved')
     logger.info(current_user)
-    logger.info(data)
+    logger.info(boat_game)
+    boat = boat_game['boat']
+    boat_name = boat['name']
+    game_id = boat_game['game']
+    actual_game = get_game_from_id(game_id)
+    boat_object = None
+    boats = actual_game.get_boats(current_user.id)
+    board = actual_game.get_board(current_user.id)
+    logger.info(boats)
+    logger.info(boat)
+    boat_object = [b for b in boats if b.name==boat_name][0]
+    logger.info(boat_object)
+    socketio.emit('update_boat', {'hail':'plop'})
     

@@ -37,6 +37,8 @@ class Boat():
         self.width = length
         self.height = 1
         self.name = name
+        self.placed = 0
+        self.illegal = 0
 
 class GamePlayer():
     def __init__(self,id):
@@ -57,7 +59,9 @@ class GamePlayer():
                 'top': b.top,
                 'horizontal': b.horizontal,
                 'width': b.width,
-                'height': b.height                
+                'height': b.height,  
+                'placed': b.placed,  
+                'illegal': b.illegal                
                 } for b in self.boats])
 
     def get_board(self):
@@ -85,7 +89,6 @@ class Game():
         for rr in range(self.rows):
             for cc in range(self.columns):
                 board.append({ 'name': '{me}_c{cc}r{rr}'.format(me=who,cc=cc,rr=rr), 'c':cc, 'r':rr, 'type': 'water' })
-        logger.info(board)
         return board
 
     def stage(self):
