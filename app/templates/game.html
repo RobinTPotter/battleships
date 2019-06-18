@@ -23,7 +23,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <form>
 <input type="button" value="swap" onclick="swap()"></input>
 <input type="button" value="ping" onclick="ping()"></input>
-<input type="button" value="ready" onclick="ready('{{ current_user.id }}','{{ game.id }}')"></input>
+<input type="button" value="ready" onclick="ready(''{{ game.id }}')"></input>
 </form>
 <div id="myboard" style="display:inherit; position:relative">
     <h2>{{current_user.id}}</h2>
@@ -58,24 +58,15 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <script src="{{ url_for('static', filename='battleships.js')}}?{{ game.id }}"></script>
 <script>
 
-//document.addEventListener('mousedown', function(e) { document.getElementById('output').innerHTML='md '+e; console.log(e) })
-//document.addEventListener('mousemove', function(e) { document.getElementById('output').innerHTML='mm '+e })
-//document.addEventListener('touchstart', function(e) { document.getElementById('output').innerHTML='ts '+e })
-//document.addEventListener('touchmove', function(e) { document.getElementById('output').innerHTML='tm '+e })
-//document.addEventListener('touchend', function(e) { document.getElementById('output').innerHTML='te '+e })
-
-
     var boats_data = {{ game.get_game_player(current_user.id).get_boats() | safe }}
     var boat = d3.select('#boats').selectAll('.boat').data(boats_data)
     var boatEnter = boat.enter().append('div')
 
     var sea_data = {{ game.get_game_player(current_user.id).get_board() | safe }}
-   
-    console.log(sea_data)
-    
+
     var sea = d3.select('#sea').selectAll('.sea').data(sea_data)
     var seaEnter = sea.enter().append('div')
-    
+
     seaEnter.attr('id', function(d,i) { return d.name })
         .attr('class', function(d,i) { return d.type })
         .style('position', 'absolute' )
@@ -86,11 +77,10 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         .text(function(d,i) { return d.id})
         .on('drop', drop )
         .on('dragover', allowdrop )
-    
-    
+
     var boat = d3.select('#boats').selectAll('.boat').data(boats_data)
     var boatEnter = boat.enter().append('div')
-    
+
     boatEnter.attr('id', function(d,i) { return `${d.name}` })
         .attr('class', 'boat dragboat')
         .attr('draggable', 'true')
@@ -106,17 +96,10 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         .on('touchstart', starttouch)
         //.on('click', spin)
         
-    boat_update()   
-        
-    function boat_update() {
-        d3.select('#boats').selectAll('.boat')
-            .style('width', function(d,i) { return `${d.width * {{ game.cell_size}} + (d.width - 1) * {{ game.border_spacing }} }px` })
-            .style('height', function(d,i) { return `${d.height * {{ game.cell_size}} + (d.height - 1) * {{ game.border_spacing }} }px` })
-    }
-       
+    
     function starttouch(me) {
         me.timeStamp = d3.event.timeStamp
-        console.log(me)
+        //console.log(me)
     }
      
     function endtouch(me) {
@@ -125,42 +108,44 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         if ((me.timeStamp + 200) > d3.event.timeStamp) spin(me)
         else drop(me)
     }
-    
+
     function drag(me) {  
-        console.log('drag', me,d3.event.target)
-        console.log('drag start', d3.event)  
+        //console.log('drag', me,d3.event.target)
+        //console.log('drag start', d3.event)  
         d3.event.dataTransfer.setData("text", d3.event.target.id);
     }
-    
+
     function allowdrop(me) {
-        console.log('allowdrop', me,d3.event.target)
+        //console.log('allowdrop', me,d3.event.target)
         ev = d3.event
         ev.preventDefault();
         
     }
-    
+
     function drop(me) {
-    
         ev = d3.event
         ev.preventDefault();
         var data = ev.dataTransfer.getData("text");
         var boat = d3.select('#'+data).datum()
-        console.log('drop', me, d3.event.target, boat )
+        //console.log('drop', me, d3.event.target, boat )
         boat.r = me.r
         boat.c = me.c
-        d3.select('#'+data).datum(boat)
-        console.log((boat.timeStamp+300) , d3.event.timeStamp)
+        //console.log((boat.timeStamp+300) , d3.event.timeStamp)
         //if ((boat.timeStamp+300) > d3.event.timeStamp) spin(me)
         //ev.target.appendChild(document.getElementById(data));   
-        //console.log(document.getElementById(data),  ev.target  )     
-        document.getElementById(data).style.top = ev.target.style.top        
-        document.getElementById(data).style.left = ev.target.style.left        
+        console.log(me, document.getElementById(data),  ev.target  )     
+        //document.getElementById(data).style.top = ev.target.style.top        
+        //document.getElementById(data).style.left = ev.target.style.left  
+        boat.top =  ev.target.style.top  
+        boat.left =  ev.target.style.left  
+        d3.select('#'+data).datum(boat)
+        boat_update()
+        update_server(me)
     }
-    
+
     function spin(me) { 
-                
         //var text = event.target.id.replace(/[^0-9]/g," ").replace(/\s\s+/g, ' ').trim().split(' ')
-        console.log('spin', me,d3.event.type,d3.event.target)
+        //console.log('spin', me,d3.event.type,d3.event.target)
         document.getElementById('output').innerHTML+='! '
         
         me.horizontal *= -1
@@ -169,13 +154,27 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         w = me.width
         me.height = w 
         me.width = h                     
-   
+
         //account for rotation danger, these are swapped
         //event.target.id=`boat_c${c}r${r}w${h}h${w}aw${ah}ah${aw}`
         //console.log('twisted')
 
         boat_update()
+        update_server(me)
     }
+
+
+    function boat_update() {
+        d3.select('#boats').selectAll('.boat')
+            .style('left', function(d,i) { return `${d.left}` })
+            .style('top', function(d,i) { return `${d.top}` })
+            .style('width', function(d,i) { return `${d.width * {{ game.cell_size}} + (d.width - 1) * {{ game.border_spacing }} }px` })
+            .style('height', function(d,i) { return `${d.height * {{ game.cell_size}} + (d.height - 1) * {{ game.border_spacing }} }px` })
+            .call(function(s) { console.log('boat update',s.datum()) })
+    }
+       
+    boat_update()   
+        
 
 </script>
 {% endblock %}

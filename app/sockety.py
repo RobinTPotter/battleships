@@ -1,11 +1,12 @@
 from app import socketio
 from app.database import users, games, get_game_from_id, get_user_from_id
 from app.logconfig import logger
+from flask_login import current_user
 
 @socketio.on('ready')
 def ready(data):
     logger.info(data)
-    id = data['player']
+    id = current_user
     game = data['game']
     actual_game = get_game_from_id(game)
     if actual_game is not None:
@@ -20,7 +21,14 @@ def ready(data):
 
 
 @socketio.on('ping')
-def ding(self):
-    logger.info('DIINGNNGG!!')
-    logger.info(self)
+def ding(data):
+    logger.info('ding')
+    logger.info(current_user)
+    logger.info(data)
+    
+@socketio.on('boat_moved')
+def boat_moved(data):
+    logger.info('boat_moved')
+    logger.info(current_user)
+    logger.info(data)
     

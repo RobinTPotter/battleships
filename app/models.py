@@ -31,8 +31,8 @@ class Boat():
         self.length = length
         self.c = -1
         self.r = -1
-        self.x = -1
-        self.y = -1
+        self.left = 30
+        self.top = 150
         self.horizontal = 1
         self.width = length
         self.height = 1
@@ -45,12 +45,16 @@ class GamePlayer():
         self.their_board = None
         self.ready = False
         self.boats = [Boat(Boat.lengths[r], Boat.names[r]) for r in range(len(Boat.lengths))]
+        i = 0
+        for b in self.boats:
+            b.top += 25*i
+            i += 1
         
     def get_boats(self):
         return str([{ 'length': b.length, 'name': b.name, 
                 'r': b.r, 'c': b.c,
-                'x': b.x,
-                'y': b.y,
+                'left': b.left,
+                'top': b.top,
                 'horizontal': b.horizontal,
                 'width': b.width,
                 'height': b.height                

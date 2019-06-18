@@ -35,8 +35,12 @@ function swap() {
     }
 }
 
-function ready(p,g) {
-    socket.emit('ready', {'player': p, 'game': g });
+function ready(g) {
+    socket.emit('ready', {'game': g});
+}
+
+function update_server(boat) {
+    socket.emit('boat_moved', boat)
 }
 
 socket.on('joined', function(data) {
@@ -57,5 +61,4 @@ socket.on('game_on', function(data) {
 socket.on('username_free', function() {
   
 })
-
 
