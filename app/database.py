@@ -21,4 +21,12 @@ def get_user_from_id(user_id):
         user = [u for u in users if u.id == user_id][0]
         
     return user    
+     
+def get_user_from_name(name):
+    user = None
+    
+    if name in [u.name for u in users]:
+        user = [u for u in users if u.name == name][0]
+        
+    return user    
     

@@ -27,9 +27,9 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <input type="button" value="ready" onclick="ready(''{{ game.id }}')"></input>
 </form>
 <div id="myboard" style="display:inherit; position:relative">
-    <h2>{{current_user.id}}</h2>
+    <h2>{{current_user.name}}</h2>
     <div style="display:inherit; position:relative">
-        <div id="sea"s tyle="display:inherit; position:relative">      
+        <div id="sea" style="display:inherit; position:relative">      
         </div>
        
     </div>
@@ -138,12 +138,11 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         boat.left =  ev.target.style.left  
         d3.select('#'+data).datum(boat)
         boat_update()
-        update_server(boat,'{{game.id}}')
+        update_server(boat,'{{game.id}}','{{current_user.id}}')
     }
 
     function spin(me) { 
-        //var text = event.target.id.replace(/[^0-9]/g," ").replace(/\s\s+/g, ' ').trim().split(' ')
-        //console.log('spin', me,d3.event.type,d3.event.target)
+    
         document.getElementById('output').innerHTML+='! '
         
         me.horizontal *= -1
@@ -153,12 +152,8 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         me.height = w 
         me.width = h                     
 
-        //account for rotation danger, these are swapped
-        //event.target.id=`boat_c${c}r${r}w${h}h${w}aw${ah}ah${aw}`
-        //console.log('twisted')
-
         boat_update()
-        update_server(me,'{{game.id}}')
+        update_server(me,'{{game.id}}','{{current_user.id}}')
     }
 
 
@@ -174,7 +169,13 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
     }
        
     boat_update()   
-        
+            
+    socket.on('update_boat', function(boat_string) {
+        var boat = JSON.parse(boat_string)
+        console.log('hello',boat)
+        d3.select('#'+boat.name).datum(boat)
+        boat_update()   
+    })
 
 </script>
 {% endblock %}

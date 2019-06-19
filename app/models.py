@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from config import Config
-from flask import jsonify
+import json
 
 
 import uuid
@@ -13,7 +13,8 @@ logger.info(dir(socketio))
 
 class Player(UserMixin):
     def __init__(self, username, password):
-        self.id = username
+        self.id = str(uuid.uuid4())
+        self.name = username
         self.set_password(password)
         self.games = []
     def set_password(self, password):
@@ -39,6 +40,18 @@ class Boat():
         self.name = name
         self.placed = 0
         self.illegal = 0
+        
+    def __repr__(self):
+        return json.dumps({ 'length': self.length, 'name': self.name, 
+                    'r': self.r, 'c': self.c,
+                    'left': self.left,
+                    'top': self.top,
+                    'horizontal': self.horizontal,
+                    'width': self.width,
+                    'height': self.height,  
+                    'placed': self.placed,  
+                    'illegal': self.illegal                
+                    })
 
 class GamePlayer():
     def __init__(self,id):
@@ -53,16 +66,7 @@ class GamePlayer():
             i += 1
         
     def get_boats(self):
-        return str([{ 'length': b.length, 'name': b.name, 
-                'r': b.r, 'c': b.c,
-                'left': b.left,
-                'top': b.top,
-                'horizontal': b.horizontal,
-                'width': b.width,
-                'height': b.height,  
-                'placed': b.placed,  
-                'illegal': b.illegal                
-                } for b in self.boats])
+        return str([b for b in self.boats])
 
     def get_board(self):
         return str(self.my_board)

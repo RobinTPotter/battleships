@@ -39,8 +39,8 @@ function ready(g) {
     socket.emit('ready', {'game': g});
 }
 
-function update_server(boat,g) {
-    socket.emit('boat_moved', { 'boat': boat, 'game': g } )
+function update_server(boat,g,u) {
+    socket.emit('boat_moved', { 'boat': boat, 'game': g, 'user': u } )
 }
 
 socket.on('joined', function(data) {
@@ -58,7 +58,4 @@ socket.on('game_on', function(data) {
     document.getElementById('whose_turn').innerHTML = '| ' + data.id + '\'s turn'
 })
 
-socket.on('update_boat', function(x) {
-  alert(x)
-})
 

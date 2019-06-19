@@ -8,7 +8,7 @@ from app.models import Player, Game
 from werkzeug.urls import url_parse
 
 from app import login #this is the batteships app intance of flask_logined thing
-from app.database import users, games
+from app.database import users, games, get_user_from_name, get_user_from_id
 from app.logconfig import logger
 
 logger.debug('hello from routes')
@@ -37,8 +37,8 @@ def login():
     if form.validate_on_submit():
         ##flash('login requested fir user {0}, remember me={1}'.format(form.username.data, form.remember_me.data))
         user = None
-        if form.username.data in [u.id for u in users]:
-            user = [u for u in users if u.id==form.username.data][0]
+        if form.username.data in [u.name for u in users]:
+            user = get_user_from_name(form.username.data)
             logger.info('found user {0}'.format(user))
         if user is None or not user.check_password(form.password.data):
             logger.info('found user {0} and {1} ({2})'.format(user, user.check_password(form.password.data), form.password.data))

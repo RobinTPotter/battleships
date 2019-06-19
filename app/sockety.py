@@ -2,6 +2,7 @@ from app import socketio
 from app.database import users, games, get_game_from_id, get_user_from_id
 from app.logconfig import logger
 from flask_login import current_user
+from flask import jsonify
 
 @socketio.on('ready')
 def ready(data):
@@ -19,8 +20,6 @@ def ready(data):
             logger.info('both ready, playing')
             socketio.emit('game_on', {'id':actual_game.players_turn})
 
-
-
 @socketio.on('ping')
 def ding(data):
     logger.info('ding')
@@ -28,20 +27,26 @@ def ding(data):
     logger.info(data)
     
 @socketio.on('boat_moved')
-def boat_moved(boat_game):
+def boat_moved(boat_game_user):
     logger.info('boat_moved')
     logger.info(current_user)
-    logger.info(boat_game)
-    boat = boat_game['boat']
+    logger.info(boat_game_user)
+    boat = boat_game_user['boat']
+    user_id = boat_game_user['user']
+    user = get_user_from_id(user_id)
     boat_name = boat['name']
-    game_id = boat_game['game']
+    game_id = boat_game_user['game']
     actual_game = get_game_from_id(game_id)
     boat_object = None
     boats = actual_game.get_boats(current_user.id)
     board = actual_game.get_board(current_user.id)
     logger.info(boats)
     logger.info(boat)
+    logger.info(user)
     boat_object = [b for b in boats if b.name==boat_name][0]
     logger.info(boat_object)
-    socketio.emit('update_boat', {'hail':'plop'})
+    for k in vars(boat_object).keys():
+        if k in boat: setattr(boat_object,k,boat[k])
+    logger.info(boat_object)
+    socketio.emit('update_boat', str(boat_object))
     
