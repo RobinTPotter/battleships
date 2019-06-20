@@ -177,6 +177,8 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         boat_update()   
     })
 
+    socket.emit('joined' , '{{ game.id}}')
+
 </script>
 {% endblock %}
 

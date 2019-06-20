@@ -3,6 +3,7 @@ from app.database import users, games, get_game_from_id, get_user_from_id
 from app.logconfig import logger
 from flask_login import current_user
 from flask import jsonify
+from flask_socketio import join_room, leave_room
 
 @socketio.on('ready')
 def ready(data):
@@ -19,6 +20,11 @@ def ready(data):
         if len(areready)==2:
             logger.info('both ready, playing')
             socketio.emit('game_on', {'id':actual_game.players_turn})
+
+@socketio.on('joined')
+def on_join(game_id):
+    join_room(current_user.id+'_'+game_id)
+    logger.info('joining room {0}_{1}'.format(current_user.id,game_id))
 
 @socketio.on('ping')
 def ding(data):
@@ -48,5 +54,5 @@ def boat_moved(boat_game_user):
     for k in vars(boat_object).keys():
         if k in boat: setattr(boat_object,k,boat[k])
     logger.info(boat_object)
-    socketio.emit('update_boat', str(boat_object))
+    socketio.emit('update_boat', str(boat_object), room='{0}_{1}'.format(current_user.id,game_id))
     

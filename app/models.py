@@ -103,7 +103,12 @@ class Game():
         if len(opp) == 0:
             return "no player yet"
         else:
-            return opp[0]
+            from app.database import get_user_from_id
+            o_id = opp[0]
+            opp = get_user_from_id(o_id)
+            logger.info('got opponent id {0} and object {1}'.format(o_id,opp))
+            return opp.name
+            
     
     def get_game_player(self,id):
         out = None
@@ -114,6 +119,7 @@ class Game():
     def get_user_player(self,id):
         out = None
         if id in self.players:
+            from app.database import get_user_from_id
             out = get_user_from_id(self.players[id].id)
         return out
 

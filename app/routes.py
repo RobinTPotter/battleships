@@ -4,9 +4,12 @@ from app.forms import LoginForm, RegistrationForm  #i didn't steal this bit
 from flask_login import current_user, login_user
 from flask_login import logout_user
 from flask_login import login_required
-from app.models import Player, Game
+
+#from app.models import Player, Game
+
 from werkzeug.urls import url_parse
 
+from app import socketio
 from app import login #this is the batteships app intance of flask_logined thing
 from app.database import users, games, get_user_from_name, get_user_from_id
 from app.logconfig import logger
