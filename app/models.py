@@ -54,8 +54,9 @@ class Boat():
                     })
 
 class GamePlayer():
-    def __init__(self,id):
-        self.player = id
+    def __init__(self,player):
+        self.user = player
+        self.player = player.id
         self.my_board = None
         self.their_board = None
         self.ready = False
@@ -74,6 +75,9 @@ class GamePlayer():
 
 class Game():
     stages = ['setup','playing','ended']
+    SETUP = 0
+    PLAYING = 1
+    ENDED = 2
     
     def __init__(self):
         self.players = {}
@@ -82,7 +86,7 @@ class Game():
         self.first_joined = None
         self.rows = 10
         self.columns = 10
-        self.stage_number = 0
+        self.stage_number = Game.SETUP
         self.id = str(uuid.uuid4())
         self.border_spacing = 2
         self.cell_size = 25
@@ -96,6 +100,8 @@ class Game():
         return board
 
     def stage(self):
+        if len([p for p in self.players.keys() if self.players[p].ready==True])==self.player_limit:
+            self.stage_number = Game.PLAYING
         return Game.stages[self.stage_number]        
 
     def opponent(self,id):
@@ -151,11 +157,13 @@ class Game():
             if len(self.players.keys())==self.player_limit:
                 ok=False
             else:
-                self.players[player_id] = GamePlayer(player_id)
+                from app.database import get_user_from_id
+
+                self.players[player_id] = GamePlayer(get_user_from_id(player_id))
                 self.players[player_id].my_board = self.generate_blank_board('you')
                 self.players[player_id].their_board = self.generate_blank_board('them')
                 ok=True
-                if self.first_joined is None: self.first_joined = player_id
+                if self.first_joined is None: self.first_joined = self.players[player_id].user.name
             
             if len(self.players.keys())==self.player_limit:
                 self.players_turn = self.first_joined

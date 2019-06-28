@@ -24,7 +24,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <form>
 <input type="button" value="swap" onclick="swap()"></input>
 <input type="button" value="ping" onclick="ping()"></input>
-<input type="button" value="ready" onclick="ready(''{{ game.id }}')"></input>
+<input type="button" value="ready" onclick="ready('{{ game.id }}')"></input>
 </form>
 <div id="myboard" style="display:inherit; position:relative">
     <h2>{{current_user.name}}</h2>
@@ -58,10 +58,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 <script src="{{ url_for('static', filename='battleships.js')}}?{{ game.id }}"></script>
 <script>
 
-    var boats_data = {{ game.get_game_player(current_user.id).get_boats() | safe }}
-    var boat = d3.select('#boats').selectAll('.boat').data(boats_data)
-    var boatEnter = boat.enter().append('div')
-
+  
     var sea_data = {{ game.get_game_player(current_user.id).get_board() | safe }}
 
     var sea = d3.select('#sea').selectAll('.sea').data(sea_data)
@@ -77,7 +74,9 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
         .text(function(d,i) { return d.id})
         .on('drop', drop )
         .on('dragover', allowdrop )
-
+  
+    var boats_data = {{ game.get_game_player(current_user.id).get_boats() | safe }}
+  
     var boat = d3.select('#boats').selectAll('.boat').data(boats_data)
     var boatEnter = boat.enter().append('div')
 
@@ -158,6 +157,7 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
 
 
     function boat_update() {
+
         d3.select('#boats').selectAll('.boat')
             .style('left', function(d,i) { return `${d.left}` })
             .style('top', function(d,i) { return `${d.top}` })
