@@ -4,7 +4,6 @@ function ping() {
     socket.emit('ping', {'hello': 'there' });
 }
 
-
 //make sure a board can be decorated
 
 function test_board() {
@@ -53,9 +52,12 @@ socket.on('player_turn_changed', function(data) {
     document.getElementById('whose_turn').innerHTML = '| ' + data.name + '\'s turn'
 })
 
+socket.on('stage_changed', function(data) {
+    console.log('stage_changed', data.id)
+    document.getElementById('game_stage').innerHTML = data.stage
+})
+
 socket.on('game_on', function(data) {
     console.log('game on',data)
     document.getElementById('whose_turn').innerHTML = '| ' + data.name + '\'s turn'
 })
-
-

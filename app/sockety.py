@@ -66,12 +66,18 @@ def boat_moved(boat_game_user):
         if updated_boat['name']!=bc.name:
             for tr in range(updated_boat['r'],updated_boat['r']+updated_boat['height']):
                 for tc in range(updated_boat['c'],updated_boat['c']+updated_boat['width']):
-                    logger.info('checking updated boat c{0}r{1}'.format(tc,tr))
+                    #logger.info('checking updated boat c{0}r{1}'.format(tc,tr))
                     for bctr in range(bc.r,bc.r+bc.height):
                         for bctc in range(bc.c,bc.c+bc.width):
-                            logger.info('checking test boat c{0}r{1}'.format(bctc,bctr))
-    for k in vars(boat_object).keys():
-        if k in updated_boat: setattr(boat_object,k,updated_boat[k])
-    logger.info(boat_object)
-    socketio.emit('update_boat', str(boat_object), room='{0}_{1}'.format(current_user.id,game_id))
+                            #logger.info('checking test boat c{0}r{1}'.format(bctc,bctr))
+                            if (bctc==tc and bctr==tr) or tr<0 or tc<0 or tr>=actual_game.rows or tc>=actual_game.columns:
+                                illegal = True
+                                logger.info('checking updated boat c{0}r{1} and c{2}r{3} '.format(tc,tr,bctc,bctr))
+                                break
+
+    if not illegal:
+        for k in vars(boat_object).keys():
+            if k in updated_boat: setattr(boat_object,k,updated_boat[k])
+        logger.info(boat_object)
+        socketio.emit('update_boat', str(boat_object), room='{0}_{1}'.format(current_user.id,game_id))
     
