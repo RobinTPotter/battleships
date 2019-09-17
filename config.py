@@ -7,3 +7,5 @@ class Config(object):
     LOGLEVEL = logging.INFO
     PORT = 8085
     NOPASSWORD_CHECK = True
+    TEST_MODE = True
+    CHROME_DRIVER = '../Downloads/chromedriver.exe'
