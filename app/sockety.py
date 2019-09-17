@@ -5,6 +5,8 @@ from flask_login import current_user
 from flask import jsonify
 from flask_socketio import join_room, leave_room
 
+print (dir(socketio))
+
 @socketio.on('ready')
 def ready(data):
     logger.info(current_user)
@@ -39,6 +41,11 @@ def ding(data):
     logger.info(current_user)
     logger.info(data)
     
+@socketio.on('log')
+def page_logging(data):
+    logger.info(data)
+
+
 @socketio.on('boat_moved')
 def boat_moved(boat_game_user):
     logger.info('boat_moved')
@@ -72,12 +79,18 @@ def boat_moved(boat_game_user):
                             #logger.info('checking test boat c{0}r{1}'.format(bctc,bctr))
                             if (bctc==tc and bctr==tr) or tr<0 or tc<0 or tr>=actual_game.rows or tc>=actual_game.columns:
                                 illegal = True
-                                logger.info('checking updated boat c{0}r{1} and c{2}r{3} '.format(tc,tr,bctc,bctr))
+                                logger.debug('checking updated boat c{0}r{1} and c{2}r{3} '.format(tc,tr,bctc,bctr))
                                 break
 
     if not illegal:
+        updated_boat['illegal']=0
         for k in vars(boat_object).keys():
+            logger.info('{0} with {1}'.format(k,updated_boat[k]))
             if k in updated_boat: setattr(boat_object,k,updated_boat[k])
-        logger.info(boat_object)
-        socketio.emit('update_boat', str(boat_object), room='{0}_{1}'.format(current_user.id,game_id))
+    else:
+        logger.info('setting boat bck to illegal for definite')
+        setattr(boat_object,'illegal', 1)
+        
+    logger.info(boat_object)
+    socketio.emit('update_boat', str(boat_object), room='{0}_{1}'.format(current_user.id,game_id))
     

@@ -166,19 +166,22 @@ Stage: <span id="game_stage">{{ game.stage() }}</span>
             .call(function(s) { console.log('boat update',s.datum()) })
             .classed('illegal',function(d) { return d.illegal==1})
             
+        socket.emit('log' , 'updated boat in game.html')
     }
        
     boat_update()   
             
     socket.on('update_boat', function(boat_string) {
         var boat = JSON.parse(boat_string)
-        console.log('hello',boat)
+        console.log('processing update boat in game.html',boat)
         d3.select('#'+boat.name).datum(boat)
         boat_update()   
+        socket.emit('log' , 'updated boat recieved game.html as '+boat_string)
     })
 
     socket.emit('joined' , '{{ game.id}}')
-
+    ping()
+    
 </script>
 {% endblock %}
 

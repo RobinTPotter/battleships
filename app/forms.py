@@ -5,10 +5,14 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo
 from app.models import Player
 from app.database import users
 from app.logconfig import logger
+from config import Config
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    if Config.NOPASSWORD_CHECK:
+        password = PasswordField('Password')
+    else:
+        password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
     logger.info('created form')

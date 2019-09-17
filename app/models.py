@@ -9,8 +9,6 @@ import uuid
 from app.logconfig import logger
 from app import socketio
 
-logger.info(dir(socketio))
-
 class Player(UserMixin):
     def __init__(self, username, password):
         self.id = str(uuid.uuid4())
@@ -23,7 +21,7 @@ class Player(UserMixin):
     def check_password(self, password):
         ok = check_password_hash(self.password, password)
         logger.info('password check {0}'.format(ok))
-        return ok
+        return ok or Config.NOPASSWORD_CHECK
 
 class Boat():
     lengths = [5,4,3,3,2]
